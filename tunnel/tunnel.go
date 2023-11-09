@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/netip"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -166,10 +165,12 @@ func resolveMetadata(ctx C.PlainContext, metadata *C.Metadata) (proxy C.Proxy, r
 		proxy = proxies["DIRECT"]
 	case Global:
 		proxy = proxies["GLOBAL"]
-	// Rule
-	default:
+	case Rule:
 		proxy, rule, err = match(metadata)
+	default:
+		panic(fmt.Sprintf("unknown mode: %s", mode))
 	}
+
 	return
 }
 
@@ -401,9 +402,10 @@ func match(metadata *C.Metadata) (C.Proxy, C.Rule, error) {
 		if !processFound && rule.ShouldFindProcess() {
 			processFound = true
 
-			srcPort, err := strconv.ParseUint(metadata.SrcPort, 10, 16)
-			if err == nil {
-				path, err := P.FindProcessName(metadata.NetWork.String(), metadata.SrcIP, int(srcPort))
+			srcIP, ok := netip.AddrFromSlice(metadata.SrcIP)
+			if ok && metadata.OriginDst.IsValid() {
+				srcIP = srcIP.Unmap()
+				path, err := P.FindProcessPath(metadata.NetWork.String(), netip.AddrPortFrom(srcIP, uint16(metadata.SrcPort)), metadata.OriginDst)
 				if err != nil {
 					log.Debugln("[Process] find process %s: %v", metadata.String(), err)
 				} else {

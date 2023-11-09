@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/Dreamacro/clash/common/queue"
@@ -94,6 +95,7 @@ func (p *Proxy) MarshalJSON() ([]byte, error) {
 	mapping := map[string]any{}
 	json.Unmarshal(inner, &mapping)
 	mapping["history"] = p.DelayHistory()
+	mapping["alive"] = p.Alive()
 	mapping["name"] = p.Name()
 	mapping["udp"] = p.SupportUDP()
 	return json.Marshal(mapping)
@@ -193,10 +195,12 @@ func urlToMetadata(rawURL string) (addr C.Metadata, err error) {
 		}
 	}
 
+	p, _ := strconv.ParseUint(port, 10, 16)
+
 	addr = C.Metadata{
 		Host:    u.Hostname(),
 		DstIP:   nil,
-		DstPort: port,
+		DstPort: C.Port(p),
 	}
 	return
 }

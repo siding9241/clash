@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"regexp"
 	"runtime"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	C "github.com/Dreamacro/clash/constant"
 	types "github.com/Dreamacro/clash/constant/provider"
 
+	regexp "github.com/dlclark/regexp2"
 	"github.com/samber/lo"
 	"gopkg.in/yaml.v3"
 )
@@ -54,7 +54,7 @@ func (pp *proxySetProvider) Name() string {
 }
 
 func (pp *proxySetProvider) HealthCheck() {
-	pp.healthCheck.check()
+	pp.healthCheck.checkAll()
 }
 
 func (pp *proxySetProvider) Update() error {
@@ -91,7 +91,7 @@ func (pp *proxySetProvider) setProxies(proxies []C.Proxy) {
 	pp.proxies = proxies
 	pp.healthCheck.setProxy(proxies)
 	if pp.healthCheck.auto() {
-		go pp.healthCheck.check()
+		go pp.healthCheck.checkAll()
 	}
 }
 
@@ -101,7 +101,7 @@ func stopProxyProvider(pd *ProxySetProvider) {
 }
 
 func NewProxySetProvider(name string, interval time.Duration, filter string, vehicle types.Vehicle, hc *HealthCheck) (*ProxySetProvider, error) {
-	filterReg, err := regexp.Compile(filter)
+	filterReg, err := regexp.Compile(filter, regexp.None)
 	if err != nil {
 		return nil, fmt.Errorf("invalid filter regex: %w", err)
 	}
@@ -133,8 +133,14 @@ func NewProxySetProvider(name string, interval time.Duration, filter string, veh
 
 		proxies := []C.Proxy{}
 		for idx, mapping := range schema.Proxies {
-			if name, ok := mapping["name"].(string); ok && len(filter) > 0 && !filterReg.MatchString(name) {
-				continue
+			if name, ok := mapping["name"].(string); ok && len(filter) > 0 {
+				matched, err := filterReg.MatchString(name)
+				if err != nil {
+					return nil, fmt.Errorf("regex filter failed: %w", err)
+				}
+				if !matched {
+					continue
+				}
 			}
 			proxy, err := adapter.ParseProxy(mapping)
 			if err != nil {
@@ -186,7 +192,7 @@ func (cp *compatibleProvider) Name() string {
 }
 
 func (cp *compatibleProvider) HealthCheck() {
-	cp.healthCheck.check()
+	cp.healthCheck.checkAll()
 }
 
 func (cp *compatibleProvider) Update() error {
@@ -286,7 +292,8 @@ func (fp *FilterableProvider) Proxies() []C.Proxy {
 				return lo.Filter(
 					item.Proxies(),
 					func(item C.Proxy, _ int) bool {
-						return fp.filterReg.MatchString(item.Name())
+						matched, _ := fp.filterReg.MatchString(item.Name())
+						return matched
 					})
 			})
 
@@ -300,6 +307,9 @@ func (fp *FilterableProvider) Proxies() []C.Proxy {
 }
 
 func (fp *FilterableProvider) Touch() {
+	for _, provider := range fp.providers {
+		provider.Touch()
+	}
 }
 
 func NewFilterableProvider(name string, providers []types.ProxyProvider, filterReg *regexp.Regexp) *FilterableProvider {
