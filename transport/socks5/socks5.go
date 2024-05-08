@@ -9,9 +9,9 @@ import (
 	"net/netip"
 	"strconv"
 
-	"github.com/Dreamacro/clash/component/auth"
+	"github.com/siding9241/clash/component/auth"
 
-	"github.com/Dreamacro/protobytes"
+	"github.com/siding9241/protobytes"
 )
 
 // Error represents a SOCKS error

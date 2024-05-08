@@ -10,11 +10,11 @@ import (
 	"time"
 	"unsafe"
 
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/log"
-	"github.com/Dreamacro/clash/tunnel/statistic"
+	C "github.com/siding9241/clash/constant"
+	"github.com/siding9241/clash/log"
+	"github.com/siding9241/clash/tunnel/statistic"
 
-	"github.com/Dreamacro/protobytes"
+	"github.com/siding9241/protobytes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"

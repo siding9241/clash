@@ -15,7 +15,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/Dreamacro/protobytes"
+	"github.com/siding9241/protobytes"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 

@@ -12,11 +12,11 @@ import (
 	"net/http"
 	"sync"
 
-	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/transport/socks5"
-	"github.com/Dreamacro/clash/transport/vmess"
+	C "github.com/siding9241/clash/constant"
+	"github.com/siding9241/clash/transport/socks5"
+	"github.com/siding9241/clash/transport/vmess"
 
-	"github.com/Dreamacro/protobytes"
+	"github.com/siding9241/protobytes"
 )
 
 const (

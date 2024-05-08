@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/Dreamacro/clash/common/batch"
-	C "github.com/Dreamacro/clash/constant"
+	"github.com/siding9241/clash/common/batch"
+	C "github.com/siding9241/clash/constant"
 
 	"github.com/samber/lo"
 	"go.uber.org/atomic"
