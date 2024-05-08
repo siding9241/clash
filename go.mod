@@ -3,7 +3,6 @@ module github.com/siding9241/clash
 go 1.21
 
 require (
-	github.com/siding9241/protobytes v0.0.0-20230617041236-6500a9f4f158
 	github.com/dlclark/regexp2 v1.10.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
@@ -15,6 +14,7 @@ require (
 	github.com/miekg/dns v1.1.55
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/samber/lo v1.38.1
+	github.com/siding9241/protobytes v1.0.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20230420174744-55c8b9515a01
